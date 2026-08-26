@@ -49,8 +49,10 @@ body {
     border-radius: 20px;
     border: 1px solid rgb(187, 187, 187);
     background-color: var(--dialog-bg);
-    gap: 15px;
+}
 
+#dialog form {
+    gap: 15px;
     display: flex;
     flex-direction: column;
 }

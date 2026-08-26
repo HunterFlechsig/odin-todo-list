@@ -9,10 +9,12 @@ function GetUserName(project) {
     input.placeholder = "Add your name";
     input.required = true;
     input.maxLength = 50;
+    input.name = "username"
 
     const button = document.createElement("button");
     button.classList.add('submit-btn');
-    button.textContent = "Continue"
+    button.type = "submit";
+    button.textContent = "Continue";
 
     fragment.append(input, button);
     return fragment;
