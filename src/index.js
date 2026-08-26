@@ -24,7 +24,7 @@ const StorageController = (() => {
 
 function clearAndSet(element, fragment) {
     element.replaceChildren();
-    element.append(fragment);
+    element.appendChild(fragment);
 }
 
 const ScreenController = (() => {

@@ -1,6 +1,25 @@
+.quicksand {
+  font-family: "Quicksand", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+
 :root {
     --dialog-bg: rgb(46, 46, 46);
-    --default-font-family: "Inter-local", "Helvetica Neue", Helvetica, Arial, "Roboto", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --clr-primary-purple: rgb(86, 70, 177);
+    --default-font-family: "quicksand", "Helvetica Neue", Helvetica, Arial, "Roboto", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    --txt-clr-main: rgb(255, 255, 255);
+    --txt-clr-secondart: rgb(172, 172, 172);
+
+    font-family: var(--default-font-family);
+}
+
+body {
+    background-color: grey;
+    color: var(--txt-clr-main);
 }
 
 .page-container {
@@ -21,19 +40,48 @@
     color: white;   
 }
 
-
 /* Dialog Styling */
-
-#dialog, #dialog input {
-    background-color: var(--dialog-bg);
-    outline: none;
-    border: none;
-    font-size: 2rem;
-    color: white;
-}
 
 #dialog {
     background-color: var(--dialog-bg);
+    font-family: var(--default-font-family);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgb(187, 187, 187);
+    background-color: var(--dialog-bg);
+    gap: 15px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.basic-input {
+    outline: none;
+    border: none;
+    font-size: 2rem;
+    font-family: var(--default-font-family);
+    background-color: var(--dialog-bg);
+    padding: 20px 10px;
+    color: var(--txt-clr-main);
+    width: 30ch;
+}
+
+.submit-btn {
+    align-self: flex-end;
+
+    background-color: var(--clr-primary-purple);
+    border: none;
+    padding: 10px 30px;
+    border-radius: 15px;
+    color: var(--txt-clr-main);
+    font-size: 1rem;
+
+    transition: filter 0.3s ease;
+}
+
+.submit-btn:hover {
+    cursor: pointer;
+    filter: brightness(85%);
 }
 
 /* ////////////// */
