@@ -1,0 +1,39 @@
+:root {
+    --dialog-bg: rgb(46, 46, 46);
+    --default-font-family: "Inter-local", "Helvetica Neue", Helvetica, Arial, "Roboto", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.page-container {
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: green;
+    color: white;
+    
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    background-color: blue;
+    color: white;   
+}
+
+
+/* Dialog Styling */
+
+#dialog, #dialog input {
+    background-color: var(--dialog-bg);
+    outline: none;
+    border: none;
+    font-size: 2rem;
+    color: white;
+}
+
+#dialog {
+    background-color: var(--dialog-bg);
+}
+
+/* ////////////// */
