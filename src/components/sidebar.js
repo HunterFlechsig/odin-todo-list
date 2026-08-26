@@ -6,6 +6,7 @@ export default function Sidebar(projects) {
     projects.forEach(project => {
         const item = document.createElement("li");
         item.textContent = project.name;
+        item.dataset.ProjectId = project.id;
         fragment.appendChild(item);
     });
 

@@ -8,9 +8,8 @@ class DataController {
     static DATA_KEY = "data"
 
     constructor() {
-        console.log("creating data");
-
         this.#hasData() ? this.#loadData() : this.#createAppData();
+        console.log("initial data:", this.data);
     }
 
     storeData = () => {
@@ -21,8 +20,8 @@ class DataController {
     #loadData = () => {
         console.log("loading data");
 
-        const localData = localStorage.getItem("data");
-        this.data = AppData.fromJSON(JSON.parse(localData));
+        const localData = JSON.parse(localStorage.getItem("data"));
+        this.data = AppData.fromJSON(localData);
     }
 
     #createAppData = () => {
@@ -117,6 +116,7 @@ class AppController {
         this.sidebar.onAddProject(() => {
             this.modal.getProjectTitle(formData => {
                 this.data.addProject(new Project(formData.title));
+                this.storage.storeData();
                 this.render();
             });
         })
@@ -124,6 +124,7 @@ class AppController {
 
     render() {
         this.sidebar.render(this.data.Projects);
+
     }
 }
 

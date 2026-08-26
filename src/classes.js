@@ -116,7 +116,7 @@ class AppData extends storageItem {
 
     static fromJSON(data) {
         const appData = new AppData();
-        this.Projects = data.Projects.map(Project.fromJSON);
+        appData.Projects = data.Projects.map(Project.fromJSON);
         return appData;
     }
 }
