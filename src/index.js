@@ -49,14 +49,12 @@ class ModalFormController {
     }
 
     getUsername(onSubmit) {
-        clearAndSet(modalForm, GetUserName());
+        clearAndSet(this.modalForm, GetUserName());
 
         const handler = (e) => {
             e.preventDefault();
 
             const formData = getFormDataAsObject(this.form);
-
-            this.form.removeEventListener("submit", handler);
             this.modal.close();
 
             onSubmit(formData.username);

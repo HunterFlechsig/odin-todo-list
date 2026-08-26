@@ -8,11 +8,13 @@
 
 :root {
     --dialog-bg: rgb(46, 46, 46);
-    --clr-primary-purple: rgb(86, 70, 177);
+    --clr-primary-purple: rgb(124, 103, 243);
     --default-font-family: "quicksand", "Helvetica Neue", Helvetica, Arial, "Roboto", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --clr-sidebar: rgb(17, 17, 17);
+    --clr-sidebar-hover: rgb(63, 63, 63);
 
     --txt-clr-main: rgb(255, 255, 255);
-    --txt-clr-secondart: rgb(172, 172, 172);
+    --txt-clr-secondary: rgb(172, 172, 172);
 
     font-family: var(--default-font-family);
 }
@@ -20,20 +22,81 @@
 body {
     background-color: grey;
     color: var(--txt-clr-main);
+    padding: 0;
+    margin: 0;
 }
 
 .page-container {
     display: flex;
+    height: 100vh;
 }
 
+
+/* SIDEBAR */
+
 .sidebar {
+    --text-size: 1rem;
+    --title-size: calc(var(--text-size) * 1.25);
+    --title-weight: 700;
+
+
     width: 250px;
-    background-color: green;
-    color: white;
+    background-color: var(--clr-sidebar);
+    color: var(--txt-clr-secondary);
+    font-size: var(--text-size);
     
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
+
+.sidebar ul {
+    list-style-type: none;
+
+    color: var(--txt-clr-secondart);
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    transition: background-color 0.5s ease;
+}
+
+.sidebar ul > li:hover {
+    background-color: var(--clr-sidebar-hover);
+    cursor: pointer;
+}
+
+.sidebar .nav-title {
+    color: white;
+    font-size: var(--title-size);    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: var(--title-weight);
+
+    margin-top: 15px; 
+}
+
+.selected {
+    color: var(--clr-primary-purple);
+}
+
+.sidebar .nav-title img {
+    width: var(--title-size);
+    position: relative;
+    top: 2px;
+}
+
+.sidebar .plus:hover {
+    fill: var(--clr-primary-purple);
+}
+
+/* /////////// */
 
 .content {
     background-color: blue;
