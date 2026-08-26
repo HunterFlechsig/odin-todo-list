@@ -105,10 +105,9 @@ class Project extends storageItem{
 }
 
 class AppData extends storageItem {
-    constructor(username) {
+    constructor() {
         super();
         this.Projects = [];
-        this.username = username;
     }
 
     addProject(project) {
@@ -116,7 +115,7 @@ class AppData extends storageItem {
     }
 
     static fromJSON(data) {
-        const appData = new AppData(data.username);
+        const appData = new AppData();
         this.Projects = data.Projects.map(Project.fromJSON);
         return appData;
     }
