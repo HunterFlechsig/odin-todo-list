@@ -61,14 +61,24 @@ body {
     flex-direction: column;
 }
 
-.sidebar ul li {
+.sidebar ul > li {
     padding: 15px 20px;
-    transition: background-color 0.5s ease;
+    transition: background-color 0.5s ease, transform 0.5s ease;
+
+    display: flex;
+    align-items: center;
+    gap: 10px
 }
 
 .sidebar ul > li:hover {
     background-color: var(--clr-sidebar-hover);
     cursor: pointer;
+}
+
+.project-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
 
 .sidebar .nav-title {
@@ -126,7 +136,7 @@ body {
     font-size: 2rem;
     font-family: var(--default-font-family);
     background-color: var(--dialog-bg);
-    padding: 20px 10px;
+    padding: 10px 0px;
     color: var(--txt-clr-main);
     width: 30ch;
 }
@@ -142,6 +152,14 @@ body {
     font-size: 1rem;
 
     transition: filter 0.3s ease;
+}
+
+.color-picker {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 1.5rem;
+    color: var(--txt-clr-secondary);
 }
 
 .submit-btn:hover {

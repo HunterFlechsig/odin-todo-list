@@ -1,7 +1,7 @@
 import "./styles.css";
 import ShowProject from "./components/project.js";
 import { AppData, Project } from "./classes.js";
-import { GetProjectTitle, GetUserName } from "./components/modals.js";
+import { GetProjectInfo, GetUserName } from "./components/modals.js";
 import Sidebar from "./components/sidebar.js";
 
 class DataController {
@@ -50,6 +50,24 @@ class ModalFormController {
         this.data = DataController
         this.modal = document.getElementById("dialog");
         this.modalForm = document.getElementById("dialog-form");
+
+        this.callback = null;
+
+        this.modalForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            if (this.callback) {
+                this.callback(this.#getFormDataAsObject(this.modalForm));
+            }
+
+            this.modal.close();
+        });
+
+        this.modal.addEventListener("keydown", (e) => {
+            if(e.keydown == "escape") {
+                this.modal.close();
+            }
+        })
     }
 
     #getFormDataAsObject() {
@@ -60,29 +78,20 @@ class ModalFormController {
     }
 
     #useModal(creationfunc, onSubmit) {
+        console.log("using modal")
         const modal = creationfunc();
         clearAndSet(this.modalForm, modal.fragment);
-
-        const handler = (e) => {
-            e.preventDefault();
-
-            const formData = this.#getFormDataAsObject();
-            this.modal.close();
-
-            onSubmit(formData);
-            this.modalForm.removeEventListener('submit', handler);
-        } 
-
-        this.modalForm.addEventListener('submit', handler);
+        this.callback = onSubmit;
         this.modal.showModal();
     }
 
-    getProjectTitle(onSubmit) {
-        this.#useModal(GetProjectTitle, onSubmit);
+    getProjectInfo(onSubmit) {
+        this.#useModal(GetProjectInfo, onSubmit);
     }
 }
 
 class SideBarController {
+    static projectDataSetName = "projectId"
     constructor() {
         this.projects = document.querySelector(".proj-list");
         this.addProjectButton = document.getElementById("add-proj");
@@ -92,11 +101,25 @@ class SideBarController {
         this.addProjectButton.addEventListener("click", callback);
     }
 
+    onSelectProject(callback) {
+        this.projects.addEventListener("click", callback);
+    }
+
+    onEditProject(callback) {
+        this.projects.addEventListener("dblclick", () => {
+            console.log("project Clicked")
+    });
+    }
+
     render(Projects) {
         const projectsList = Sidebar(Projects);   
         this.projects.replaceChildren(this.projects.firstElementChild);
         this.projects.appendChild(projectsList);
     }
+}
+
+class MainContentController {
+
 }
 
 class AppController {
@@ -105,6 +128,8 @@ class AppController {
         this.data = this.storage.data;
         this.modal = new ModalFormController();
         this.sidebar = new SideBarController();
+        this.main = new MainContentController();
+        this.selectedProjectId = null;
     }
 
     init() {
@@ -114,8 +139,25 @@ class AppController {
 
     bindEvents() {
         this.sidebar.onAddProject(() => {
-            this.modal.getProjectTitle(formData => {
-                this.data.addProject(new Project(formData.title));
+            this.modal.getProjectInfo(formData => {
+                this.data.addProject(new Project(formData.title, formData.color));
+                this.storage.storeData();
+                this.render();
+            });
+        })
+
+        this.sidebar.onSelectProject((e) => {
+            const pId = e.target.dataset[SideBarController.projectDataSetName];
+            if(pId) {
+                this.selectedProjectId  = pId;
+                this.render();
+            }
+        })
+
+        this.sidebar.onEditProject((e) => {
+            const pId = e.target.dataset[SideBarController.projectDataSetName];
+            this.modal.getProjectInfo(formData => {
+                this.data.addProject(new Project(formData.title, formData.color));
                 this.storage.storeData();
                 this.render();
             });
@@ -129,4 +171,4 @@ class AppController {
 }
 
 const app = new AppController().init();
-
+export { SideBarController }

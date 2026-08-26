@@ -108,6 +108,7 @@ class AppData extends storageItem {
     constructor() {
         super();
         this.Projects = [];
+        this.addProject(new Project("Personal", "var(--clr-primary-purple)"))
     }
 
     addProject(project) {

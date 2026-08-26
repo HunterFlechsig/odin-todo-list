@@ -30,10 +30,10 @@ function GetUserName() {
     return form;
 }
 
-function GetProjectTitle() {
+function GetProjectInfo() {
     console.log("making getProject")
 
-    const form = new ModalformData(['title'])
+    const form = new ModalformData(['title','color'])
 
     const input = document.createElement('input');
     input.classList.add("basic-input");
@@ -42,13 +42,24 @@ function GetProjectTitle() {
     input.maxLength = 50;
     input.name = form.formNames[0];
 
+    const colorInput = document.createElement('input');
+    const colorLabel = document.createElement('label');
+    const colorDiv = document.createElement('div');
+    colorInput.type = "color";
+    colorInput.id = "color";
+    colorInput.name = "color";
+    colorLabel.htmlFor = "color";
+    colorLabel.textContent = "choose color";
+    colorDiv.classList.add('color-picker');
+    colorDiv.append( colorLabel, colorInput);
+
     const button = document.createElement("button");
     button.classList.add('submit-btn');
     button.type = "submit";
     button.textContent = "Continue";
 
-    form.add([input,button])
+    form.add([input,colorDiv,button])
     return form
 }
 
-export { GetUserName, GetProjectTitle };
+export { GetUserName, GetProjectInfo };
