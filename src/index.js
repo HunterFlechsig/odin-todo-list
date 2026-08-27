@@ -1,7 +1,7 @@
-import "./styles.css";
+import "./styles/styles.css";
 import ShowProject from "./components/project.js";
 import { AppData, Project } from "./classes.js";
-import { GetProjectInfo, GetUserName } from "./components/modals.js";
+import { GetDeleteConfirmation, GetProjectInfo } from "./components/modals.js";
 import Sidebar from "./components/sidebar.js";
 
 class DataController {
@@ -77,17 +77,22 @@ class ModalFormController {
         return formDataObj;
     }
 
-    #useModal(creationfunc, onSubmit) {
+    #useModal(creationfunc, data, onSubmit) {
         console.log("using modal")
-        const modal = creationfunc();
+        const modal = creationfunc(data);
         clearAndSet(this.modalForm, modal.fragment);
         this.callback = onSubmit;
         this.modal.showModal();
     }
 
-    getProjectInfo(onSubmit) {
-        this.#useModal(GetProjectInfo, onSubmit);
+    getProjectInfo(onSubmit, project = {}) {
+        this.#useModal(GetProjectInfo, project, onSubmit);
     }
+
+    getDeleteConfirmation(onSubmit) {
+        this.#useModal(GetDeleteConfirmation, {}, onSubmit);
+    }
+
 }
 
 class SideBarController {
@@ -95,6 +100,7 @@ class SideBarController {
     constructor() {
         this.projects = document.querySelector(".proj-list");
         this.addProjectButton = document.getElementById("add-proj");
+        this.tasks = document.querySelector(".tasks-list");
     }
 
     onAddProject(callback) {
@@ -105,10 +111,8 @@ class SideBarController {
         this.projects.addEventListener("click", callback);
     }
 
-    onEditProject(callback) {
-        this.projects.addEventListener("dblclick", () => {
-            console.log("project Clicked")
-    });
+    onSelectTask(callback) {
+        this.tasks.addEventListener("click", callback)
     }
 
     render(Projects) {
@@ -119,7 +123,9 @@ class SideBarController {
 }
 
 class MainContentController {
+    render() {
 
+    }
 }
 
 class AppController {
@@ -130,6 +136,41 @@ class AppController {
         this.sidebar = new SideBarController();
         this.main = new MainContentController();
         this.selectedProjectId = null;
+    }
+
+    #projectActions = {
+        show: (id) => {},
+
+        edit: (id) => {
+            const callback = formData => {
+                this.data.updateProject(id, formData.title, formData.color);
+                this.storage.storeData();
+                this.render();
+            }
+            this.modal.getProjectInfo(callback, this.data.getProject(id));
+        },
+
+        delete: (id) => {
+            this.modal.getDeleteConfirmation(() => {
+                this.data.deleteProject(id)
+                this.storage.storeData();
+                this.render()
+            })
+        },
+    }
+
+    #taskActions = {
+        myDay: () => {},
+
+        nextSeven: () => {},
+
+        all: (id) => {
+            this.modal.getDeleteConfirmation(() => {
+                this.data.deleteProject(id)
+                this.storage.storeData();
+                this.render()
+            })
+        },
     }
 
     init() {
@@ -147,26 +188,24 @@ class AppController {
         })
 
         this.sidebar.onSelectProject((e) => {
-            const pId = e.target.dataset[SideBarController.projectDataSetName];
-            if(pId) {
-                this.selectedProjectId  = pId;
-                this.render();
+            const projectId = e.target.dataset[SideBarController.projectDataSetName];
+            const action = e.target.dataset["action"];
+
+            console.log(projectId, action);
+            if(projectId && action) {
+                console.log("before", this.data)
+                this.selectedProjectId  = projectId;
+                this.#projectActions[action](projectId);
             }
         })
 
-        this.sidebar.onEditProject((e) => {
-            const pId = e.target.dataset[SideBarController.projectDataSetName];
-            this.modal.getProjectInfo(formData => {
-                this.data.addProject(new Project(formData.title, formData.color));
-                this.storage.storeData();
-                this.render();
-            });
+        this.sidebar.onSelectTask((e) => {
+
         })
     }
 
     render() {
         this.sidebar.render(this.data.Projects);
-
     }
 }
 

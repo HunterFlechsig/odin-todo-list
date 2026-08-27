@@ -115,6 +115,21 @@ class AppData extends storageItem {
         this.Projects.push(project);
     }
 
+    getProject(id) {
+        return this.Projects.find(project => project.id === id)
+    }
+
+    updateProject(id, name, color) {
+        const project = this.getProject(id);
+        project.update(name,color);
+    }
+
+    deleteProject(id) {
+        console.log("appdata before:", this.Projects);
+        this.Projects = this.Projects.filter(project => project.id !== id);
+        console.log("appdata after:", this.Projects);
+    }
+
     static fromJSON(data) {
         const appData = new AppData();
         appData.Projects = data.Projects.map(Project.fromJSON);

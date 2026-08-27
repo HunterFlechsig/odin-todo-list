@@ -1,0 +1,59 @@
+/* Dialog Styling */
+
+#dialog {
+    background-color: var(--dialog-bg);
+    font-family: var(--default-font-family);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgb(187, 187, 187);
+    background-color: var(--dialog-bg);
+}
+
+#dialog h1 {
+    color: white
+}
+
+#dialog form {
+    gap: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.basic-input {
+    outline: none;
+    border: none;
+    font-size: 2rem;
+    font-family: var(--default-font-family);
+    background-color: var(--dialog-bg);
+    padding: 10px 0px;
+    color: var(--txt-clr-main);
+    width: 30ch;
+}
+
+.submit-btn {
+    align-self: flex-end;
+
+    background-color: var(--clr-primary-purple);
+    border: none;
+    padding: 10px 30px;
+    border-radius: 15px;
+    color: var(--txt-clr-main);
+    font-size: 1rem;
+
+    transition: filter 0.3s ease;
+}
+
+.color-picker {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 1.5rem;
+    color: var(--txt-clr-secondary);
+}
+
+.submit-btn:hover {
+    cursor: pointer;
+    filter: brightness(85%);
+}
+
+/* ////////////// */

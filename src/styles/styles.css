@@ -1,0 +1,70 @@
+.quicksand {
+  font-family: "Quicksand", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
+.quantico-regular {
+  font-family: "Quantico", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.quantico-bold {
+  font-family: "Quantico", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.quantico-regular-italic {
+  font-family: "Quantico", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.quantico-bold-italic {
+  font-family: "Quantico", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+:root {
+    --dialog-bg: rgb(46, 46, 46);
+    --clr-primary-purple: rgb(124, 103, 243);
+    --default-font-family: "quantico", "quicksand", "Helvetica Neue", Helvetica, Arial, "Roboto", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --clr-sidebar: rgb(17, 17, 17);
+    --clr-sidebar-hover: rgb(63, 63, 63);
+
+    --txt-clr-main: rgb(255, 255, 255);
+    --txt-clr-secondary: rgb(172, 172, 172);
+
+    font-family: var(--default-font-family);
+}
+
+body {
+    background-color: grey;
+    color: var(--txt-clr-main);
+    padding: 0;
+    margin: 0;
+}
+
+.page-container {
+    display: flex;
+    height: 100vh;
+}
+
+
+
+.content {
+    background-color: blue;
+    color: white;   
+}
