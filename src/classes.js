@@ -96,6 +96,10 @@ class Project extends storageItem{
         this.color = color;
     }
 
+    static isEqual(Project1, Project2) {
+        return Project1.id === Project2.id;
+    }
+
     static fromJSON(data) {
         const project = new Project(data.name, data.color);
         project.id = data.id;
@@ -108,11 +112,30 @@ class AppData extends storageItem {
     constructor() {
         super();
         this.Projects = [];
-        this.addProject(new Project("Personal", "var(--clr-primary-purple)"))
+        const personalProj = new Project("Personal", "var(--clr-primary-purple)");
+        this.addProject(personalProj);
+        this.defualtProject = personalProj;
+    }
+
+    setDefualtProject(id) {
+        const proj = this.getProject(id);
+        if(Project.isEqual(proj, this.defualtProject)) return;
+   
+
+        this.deleteProject(id);
+        this.defualtProject = proj;
+        this.Projects.unshift(proj)
+    }
+
+    #projectExists(project) {
+        return this.Projects.find(proj => proj.name === project.name)
     }
 
     addProject(project) {
+        if(this.#projectExists(project)) return false;
+        
         this.Projects.push(project);
+        return true;
     }
 
     getProject(id) {
@@ -133,9 +156,10 @@ class AppData extends storageItem {
     }
 
     deleteProject(id) {
-        console.log("appdata before:", this.Projects);
+        if(id === this.defualtProject.id) return false;
+
         this.Projects = this.Projects.filter(project => project.id !== id);
-        console.log("appdata after:", this.Projects);
+        return true;
     }
 
     static fromJSON(data) {

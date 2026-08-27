@@ -4,6 +4,7 @@ import { AppData, Project } from "./classes.js";
 import { GetDeleteConfirmation, GetProjectInfo } from "./components/modals.js";
 import Sidebar from "./components/sidebar.js";
 import { MyDay, AllTasks } from "./components/lists.js";
+import CreateTaskInput from "./components/TaskCreate.js";
 
 class DataController {
     static DATA_KEY = "data"
@@ -145,9 +146,11 @@ class SideBarController {
 }
 
 class MainContentController {
+    static inputId = "task-input";
 
     constructor() {
         this.content = document.querySelector(".content");
+        this.taskInput = CreateTaskInput(MainContentController.inputId);
     }
 
     #viewActions = {
@@ -163,6 +166,14 @@ class MainContentController {
             return AllTasks();
         }
     }
+
+    onCreateTask(callback) {
+        this.taskInput.addEventListener('keydown', (e) => {
+            if (event.key === 'Enter') {
+                callback(e);
+            }
+        });
+    }    
 
     render(view) {
         console.log(view);
@@ -202,10 +213,17 @@ class AppController {
 
         delete: (id) => {
             this.modal.getDeleteConfirmation(() => {
-                this.data.deleteProject(id)
+                if(!this.data.deleteProject(id)) {
+                    alert("Cannot remove dafualt project")
+                }
                 this.storage.storeData();
                 this.render()
             })
+        },
+
+        star: (id) => {
+            this.data.setDefualtProject(id)
+            this.storage.storeData()
         },
     }
 
@@ -233,7 +251,9 @@ class AppController {
     bindEvents() {
         this.sidebar.onAddProject(() => {
             this.modal.getProjectInfo(formData => {
-                this.data.addProject(new Project(formData.title, formData.color));
+                if(!this.data.addProject(new Project(formData.title, formData.color))) {
+                    alert("Project already exists");
+                }
                 this.storage.storeData();
                 this.render();
             });
@@ -258,6 +278,10 @@ class AppController {
             this.#taskActions[itemId]();
             this.render();
         })
+
+        // this.main.onCreateTask((e) => {
+
+        // })
     }
 
     render() {
