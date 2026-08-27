@@ -3,6 +3,7 @@ import ShowProject from "./components/project.js";
 import { AppData, Project } from "./classes.js";
 import { GetDeleteConfirmation, GetProjectInfo } from "./components/modals.js";
 import Sidebar from "./components/sidebar.js";
+import { MyDay, AllTasks } from "./components/lists.js";
 
 class DataController {
     static DATA_KEY = "data"
@@ -44,15 +45,16 @@ function clearAndSet(element, fragment) {
     element.appendChild(fragment);
 }
 
-// render forms and senf data back
+// render forms and send data back
 class ModalFormController {
     constructor(DataController) {
         this.data = DataController
         this.modal = document.getElementById("dialog");
         this.modalForm = document.getElementById("dialog-form");
-
+        this.selectedItem = null;
         this.callback = null;
 
+        // on submit send data back to screen controller with callback
         this.modalForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
@@ -77,6 +79,8 @@ class ModalFormController {
         return formDataObj;
     }
 
+    // takes a function to create form, data to fill the form in, 
+    // a callback to do something with data recieved
     #useModal(creationfunc, data, onSubmit) {
         console.log("using modal")
         const modal = creationfunc(data);
@@ -95,12 +99,16 @@ class ModalFormController {
 
 }
 
+// render and controll sidebar 
 class SideBarController {
     static projectDataSetName = "projectId"
+    static sidebarDataSetName = "sideBarId"
+
     constructor() {
         this.projects = document.querySelector(".proj-list");
         this.addProjectButton = document.getElementById("add-proj");
         this.tasks = document.querySelector(".tasks-list");
+        this.lastSelectedItem = null;
     }
 
     onAddProject(callback) {
@@ -115,16 +123,51 @@ class SideBarController {
         this.tasks.addEventListener("click", callback)
     }
 
-    render(Projects) {
-        const projectsList = Sidebar(Projects);   
+    #setSelectedItem(id) {
+        const item = document.getElementById(id);
+        item.classList.add("selected");
+        if(this.lastSelectedItem) {
+            const lastSelectedItem = document.getElementById(this.lastSelectedItem);
+            lastSelectedItem.classList.remove("selected");
+        }
+        this.lastSelectedItem = id; 
+    }
+
+    render(projects, selectedItemId) {
+        const projectsList = Sidebar(projects);   
         this.projects.replaceChildren(this.projects.firstElementChild);
         this.projects.appendChild(projectsList);
+
+        console.log("sidebar render", selectedItemId);
+
+        if(selectedItemId) this.#setSelectedItem(selectedItemId);
     }
 }
 
 class MainContentController {
-    render() {
 
+    constructor() {
+        this.content = document.querySelector(".content");
+    }
+
+    #viewActions = {
+        project : (project) => {
+            return ShowProject(project);
+        },
+
+        myDay: () => {
+            return MyDay();
+        },
+
+        allTasks: () => {
+            return AllTasks();
+        }
+    }
+
+    render(view) {
+        console.log(view);
+        if(!(view.type in this.#viewActions)) throw new Error(`View ${view.type} type doesnt Exist`)
+        clearAndSet(this.content, this.#viewActions[view.type](view.data));
     }
 }
 
@@ -135,11 +178,18 @@ class AppController {
         this.modal = new ModalFormController();
         this.sidebar = new SideBarController();
         this.main = new MainContentController();
-        this.selectedProjectId = null;
+        this.#taskActions["my-day"]();
+        this.selectedSideBarItem = "my-day";
     }
 
     #projectActions = {
-        show: (id) => {},
+        show: (id) => {
+            this.view = {
+                type: "project",
+                data: this.data.getProject(id),
+            }
+            this.selectedSideBarItem = id;
+        },
 
         edit: (id) => {
             const callback = formData => {
@@ -160,16 +210,18 @@ class AppController {
     }
 
     #taskActions = {
-        myDay: () => {},
+        ["my-day"]: () => {
+            this.view = {
+                type: "myDay",
+                data: this.data.getTodaysTasks(),
+            }
+        },
 
-        nextSeven: () => {},
-
-        all: (id) => {
-            this.modal.getDeleteConfirmation(() => {
-                this.data.deleteProject(id)
-                this.storage.storeData();
-                this.render()
-            })
+        ["all-tasks"]: () => {
+            this.view = {
+                type: "allTasks",
+                data: this.data.getAllTasks(),
+            }
         },
     }
 
@@ -188,24 +240,29 @@ class AppController {
         })
 
         this.sidebar.onSelectProject((e) => {
-            const projectId = e.target.dataset[SideBarController.projectDataSetName];
-            const action = e.target.dataset["action"];
+            const project = e.target.closest(".sidebar-project");
+            if (!project) return;
+
+            const projectId = project.id;
+            const action = e.target.closest("[data-action]")?.dataset.action ?? "show";
 
             console.log(projectId, action);
-            if(projectId && action) {
-                console.log("before", this.data)
-                this.selectedProjectId  = projectId;
-                this.#projectActions[action](projectId);
-            }
+            this.#projectActions[action](projectId);
+            this.render();
         })
 
         this.sidebar.onSelectTask((e) => {
-
+            const itemId = e.target.id;
+            console.log("clicked tasks: ", itemId);
+            this.selectedSideBarItem = itemId;
+            this.#taskActions[itemId]();
+            this.render();
         })
     }
 
     render() {
-        this.sidebar.render(this.data.Projects);
+        this.sidebar.render(this.data.Projects, this.selectedSideBarItem);
+        this.main.render(this.view);
     }
 }
 

@@ -77,10 +77,6 @@
     margin-top: 15px; 
 }
 
-.selected {
-    color: var(--clr-primary-purple);
-}
-
 .sidebar .nav-title img {
     width: var(--title-size);
     position: relative;

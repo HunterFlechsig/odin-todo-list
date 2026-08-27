@@ -119,6 +119,14 @@ class AppData extends storageItem {
         return this.Projects.find(project => project.id === id)
     }
 
+    getTodaysTasks() {
+        return {};
+    }
+
+    getAllTasks() {
+        return {};
+    }
+
     updateProject(id, name, color) {
         const project = this.getProject(id);
         project.update(name,color);

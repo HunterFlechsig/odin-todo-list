@@ -11,7 +11,7 @@ export default function Sidebar(projects) {
         const span = document.createElement("span");
         span.textContent = project.name;
         item.dataset["action"] = "show"
-        item.dataset[SideBarController.projectDataSetName] = project.id;
+        item.id = project.id;
         item.classList.add("sidebar-project")
         
         const dot = document.createElement("span");
@@ -24,13 +24,11 @@ export default function Sidebar(projects) {
         const edit = document.createElement("span");
         edit.textContent = "edit";
         edit.dataset["action"] = "edit"
-        edit.dataset[SideBarController.projectDataSetName] = project.id;
         edit.classList.add("material-symbols-outlined", "hidden-btn")
 
         const deleteSpan = document.createElement("span");
         deleteSpan.textContent = "delete";
         deleteSpan.dataset["action"] = "delete"
-        deleteSpan.dataset[SideBarController.projectDataSetName] = project.id;
         deleteSpan.classList.add("material-symbols-outlined", "hidden-btn")
 
         item.append(dot,span, fill, edit, deleteSpan);
