@@ -34,7 +34,8 @@ class Todo extends storageItem {
     }
 
     static fromJSON(data) {
-        const todo = new TodoItem(...data);
+        const {title, desc, dueDate, priority, status} = data
+        const todo = new Todo(title, desc, dueDate, priority, status);
         todo.id = data.id;
         return todo;
     }
