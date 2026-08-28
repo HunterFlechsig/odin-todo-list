@@ -4,7 +4,16 @@ export default function CreateTaskInput(id) {
     const button = document.createElement("button");
     button.type = 'submit';
     input.name = "title";
-    form.append(input,button);
+    input.maxLength = 50;
+
+    const add = document.createElement("span");
+    add.classList.add("material-symbols-outlined")
+    add.textContent = "arrow_upward";
+
+    form.classList.add("add-task");
+    
+    button.append(add);
+    form.append(input, button);
     form.id = id;
 
     return form;

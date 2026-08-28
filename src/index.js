@@ -189,8 +189,8 @@ class AppController {
         this.modal = new ModalFormController();
         this.sidebar = new SideBarController();
         this.main = new MainContentController();
-        this.#taskActions["my-day"]();
-        this.selectedSideBarItem = "my-day";
+        console.log(this.data.defualtProject);
+        this.#projectActions["show"](this.data.defualtProject);
     }
 
     #projectActions = {
@@ -254,7 +254,8 @@ class AppController {
     bindEvents() {
         this.sidebar.onAddProject(() => {
             this.modal.getProjectInfo(formData => {
-                if(!this.data.addProject(new Project(formData.title, formData.color))) {
+                const title = formData.title.charAt(0).toUpperCase() + formData.title.slice(1);
+                if(!this.data.addProject(new Project(title, formData.color))) {
                     alert("Project already exists");
                 }
                 this.storage.storeData();
@@ -284,10 +285,8 @@ class AppController {
 
         this.main.onCreateTask((formData) => {
             const todo = new Todo(formData.title);
-            console.log("on create proj:", this.data.getProject(this.view.projectId), todo, formData);
             this.data.getProject(this.view.projectId).addTodo(todo);
             this.storage.storeData();
-            console.log( this.data.getProject(this.view.projectId))
         })
     }
 

@@ -3,6 +3,7 @@ export default function ShowProject(project, createTask) {
 
     const div = document.createElement('div');
     const title = document.createElement('h1'); 
+    div.append(document.createElement("div"));
     div.append(createTask);
     div.classList.add("main");
     title.style.border = `3px solid ${project.color}`
