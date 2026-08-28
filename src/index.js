@@ -1,6 +1,6 @@
 import "./styles/styles.css";
 import ShowProject from "./components/project.js";
-import { AppData, Project } from "./classes.js";
+import { AppData, Project, Todo } from "./classes.js";
 import { GetDeleteConfirmation, GetProjectInfo } from "./components/modals.js";
 import Sidebar from "./components/sidebar.js";
 import { MyDay, AllTasks } from "./components/lists.js";
@@ -46,6 +46,13 @@ function clearAndSet(element, fragment) {
     element.appendChild(fragment);
 }
 
+function getFormDataAsObject(data) {
+    const formData = new FormData(data);
+    const formDataObj = Object.fromEntries(formData.entries());
+    console.log(formDataObj);
+    return formDataObj;
+}
+
 // render forms and send data back
 class ModalFormController {
     constructor(DataController) {
@@ -60,7 +67,7 @@ class ModalFormController {
             e.preventDefault();
 
             if (this.callback) {
-                this.callback(this.#getFormDataAsObject(this.modalForm));
+                this.callback(getFormDataAsObject(e.target));
             }
 
             this.modal.close();
@@ -71,13 +78,6 @@ class ModalFormController {
                 this.modal.close();
             }
         })
-    }
-
-    #getFormDataAsObject() {
-        const formData = new FormData(this.modalForm);
-        const formDataObj = Object.fromEntries(formData.entries());
-        console.log(formDataObj);
-        return formDataObj;
     }
 
     // takes a function to create form, data to fill the form in, 
@@ -139,8 +139,6 @@ class SideBarController {
         this.projects.replaceChildren(this.projects.firstElementChild);
         this.projects.appendChild(projectsList);
 
-        console.log("sidebar render", selectedItemId);
-
         if(selectedItemId) this.#setSelectedItem(selectedItemId);
     }
 }
@@ -150,12 +148,12 @@ class MainContentController {
 
     constructor() {
         this.content = document.querySelector(".content");
-        this.taskInput = CreateTaskInput(MainContentController.inputId);
+        this.createTask = CreateTaskInput(MainContentController.inputId);
     }
 
     #viewActions = {
         project : (project) => {
-            return ShowProject(project);
+            return ShowProject(project, this.createTask);
         },
 
         myDay: () => {
@@ -168,11 +166,13 @@ class MainContentController {
     }
 
     onCreateTask(callback) {
-        this.taskInput.addEventListener('keydown', (e) => {
-            if (event.key === 'Enter') {
-                callback(e);
-            }
-        });
+        this.createTask.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const data = getFormDataAsObject(e.target);
+            console.log("on create teask", data);
+            if(!data.title) return;
+            callback(data);
+        })
     }    
 
     render(view) {
@@ -198,6 +198,7 @@ class AppController {
             this.view = {
                 type: "project",
                 data: this.data.getProject(id),
+                projectId: id,
             }
             this.selectedSideBarItem = id;
         },
@@ -232,6 +233,7 @@ class AppController {
             this.view = {
                 type: "myDay",
                 data: this.data.getTodaysTasks(),
+                projectId: this.data.defualtProject,
             }
         },
 
@@ -239,6 +241,7 @@ class AppController {
             this.view = {
                 type: "allTasks",
                 data: this.data.getAllTasks(),
+                projectId: this.data.defualtProject,
             }
         },
     }
@@ -279,9 +282,13 @@ class AppController {
             this.render();
         })
 
-        // this.main.onCreateTask((e) => {
-
-        // })
+        this.main.onCreateTask((formData) => {
+            const todo = new Todo(formData.title);
+            console.log("on create proj:", this.data.getProject(this.view.projectId), todo, formData);
+            this.data.getProject(this.view.projectId).addTodo(todo);
+            this.storage.storeData();
+            console.log( this.data.getProject(this.view.projectId))
+        })
     }
 
     render() {

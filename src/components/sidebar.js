@@ -2,7 +2,6 @@ import { SideBarController } from "../index.js";
 import "../styles/sidebar.css"
 
 export default function Sidebar(projects) {
-    console.log("making Sidebar with: ", projects);
 
     const fragment = new DocumentFragment();
 
