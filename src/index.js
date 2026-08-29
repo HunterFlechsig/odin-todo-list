@@ -72,9 +72,17 @@ class SideBarController {
     static projectDataSetName = "projectId"
     static sidebarDataSetName = "sideBarId"
 
-    constructor() {
+    constructor(startingSelect) {
         this.sidebar = document.querySelector(".sidebar");
-        this.projects = document.querySelector(".proj-list")
+        this.projects = document.querySelector(".proj-list");
+        this.selectedItemId = startingSelect;
+    }
+
+    #setSelectedItem() {
+        const lastSelectedItem = document.querySelector(".sidebar-item.selected")
+        const item = document.getElementById(this.selectedItemId);
+        if(item) item.classList.add("selected"); 
+        if(lastSelectedItem) lastSelectedItem.classList.remove("selected");
     }
 
     onAction(callback) {
@@ -82,6 +90,7 @@ class SideBarController {
             const sidebarItem = e.target.closest("[data-action]");
             const id = e.target.closest("li").id;
 
+            if(id) this.selectedItemId = id;
             if(!sidebarItem) return;
 
             callback({
@@ -91,22 +100,11 @@ class SideBarController {
         })
     }
 
-    // #setSelectedItem(id) {
-    //     const item = document.getElementById(id);
-    //     item.classList.add("selected");
-    //     if(this.lastSelectedItem) {
-    //         const lastSelectedItem = document.getElementById(this.lastSelectedItem);
-    //         lastSelectedItem.classList.remove("selected");
-    //     }
-    //     this.lastSelectedItem = id; 
-    // }
-
-    render(projects, selectedItemId) {
+    render(projects) {
         const projectsList = Sidebar(projects);   
         this.projects.replaceChildren(this.projects.firstElementChild);
         this.projects.appendChild(projectsList);
-
-        // if(selectedItemId) this.#setSelectedItem(selectedItemId);
+        this.#setSelectedItem()
     }
 }
 
@@ -132,15 +130,15 @@ class MainContentController {
         }
     }
 
-    onCreateTask(callback) {
-        this.createTask.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const data = utils.getFormDataAsObject(e.target);
-            console.log("on create teask", data);
-            if(!data.title) return;
-            callback(data);
-        })
-    }    
+    // onCreateTask(callback) {
+    //     this.createTask.addEventListener("submit", (e) => {
+    //         e.preventDefault();
+    //         const data = utils.getFormDataAsObject(e.target);
+    //         console.log("on create teask", data);
+    //         if(!data.title) return;
+    //         callback(data);
+    //     })
+    // }    
 
     render(view) {
         console.log(view);
@@ -154,14 +152,10 @@ class AppController {
         this.storage = new DataController();
         this.data = this.storage.data;
         this.modal = new ModalController();
-        this.sidebar = new SideBarController();
+        this.sidebar = new SideBarController(this.data.defualtProject.id);
         this.main = new MainContentController();
-        console.log(this.data.defualtProject);
 
-        this.modalState = {
-            action: "close",
-            data: {},
-        }
+        console.log(this.data.defualtProject);
     }
 
     #sideBarAction = {
@@ -195,6 +189,10 @@ class AppController {
         ["star"]: (id) => {
             this.data.setDefualtProject(id);
         },
+
+        ["show"]: (id) => {
+            console.log("Show something on main");
+        }
     }
 
     #ModalAction = {
@@ -242,7 +240,7 @@ class AppController {
     }
 
     render() {
-        this.sidebar.render(this.data.Projects, this.selectedSideBarItem);
+        this.sidebar.render(this.data.Projects);
         // this.main.render(this.view);
     }
 }
