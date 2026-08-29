@@ -58,9 +58,11 @@ class MainContentController {
     }
 
     #viewActions = {
-        project : (project) => {
+        project : (data) => {
+            const { selectedProject, projects } = data
             const fragement = document.createDocumentFragment();
-            fragement.append(ShowProject(project), CreateTask());
+            console.log(data);
+            fragement.append(ShowProject(selectedProject), CreateTask({}, projects, selectedProject));
             return fragement;
         },
 
@@ -75,7 +77,6 @@ class MainContentController {
   
 
     render(view) {
-        console.log("view" , view);
         utils.clearAndSet(this.content, this.#viewActions[view.type](view.data));
     }
 }
@@ -88,10 +89,7 @@ class AppController {
         this.sidebar = new SideBarController(this.data.defualtProject.id);
         this.main = new MainContentController();
 
-        this.view = {
-            type: "project",
-            data: this.data.defualtProject,
-        }
+        this.#sideBarAction["show"](this.data.defualtProject.id);
     }
 
     #sideBarAction = {
@@ -129,7 +127,10 @@ class AppController {
         ["show"]: (id) => {
             this.view = {
                 type: "project",
-                data: this.data.getProject(id),
+                data: {
+                    selectedProject: this.data.getProject(id),
+                    projects:  this.data.Projects,
+                }
             }
         }
     }

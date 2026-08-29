@@ -17,17 +17,7 @@
     gap: 15px;
     display: flex;
     flex-direction: column;
-}
-
-.basic-input {
-    outline: none;
-    border: none;
-    font-size: 2rem;
-    font-family: var(--default-font-family);
-    background-color: var(--dialog-bg);
-    padding: 10px 0px;
-    color: var(--txt-clr-main);
-    width: 30ch;
+    position: relative;
 }
 
 .submit-btn {
@@ -54,6 +44,22 @@
 .submit-btn:hover {
     cursor: pointer;
     filter: brightness(85%);
+}
+
+.close {
+    align-self: flex-end;
+    background: none;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    color: var(--txt-clr-secondary);
+    position: absolute;
+    top: -15px;
+    right: -15px;
+}
+
+.close:hover {
+    color: var(--clr-primary-purple);
 }
 
 /* ////////////// */

@@ -1,4 +1,4 @@
-import { GetProjectInfo } from "../components/modals.js";
+import { GetProjectInfo, GetDeleteConfirmation } from "../components/modals.js";
 import * as utils from "./utilities.js"
 
 // render forms and send data back
@@ -28,7 +28,8 @@ export default class Modal {
     #useModal(creationfunc, data) {
         console.log("using modal")
         const modal = creationfunc(data);
-        utils.clearAndSet(this.modalForm, modal.fragment);
+        if(this.modalForm.firstElementChild) this.modalForm.replaceChildren(this.modalForm.firstElementChild);
+        this.modalForm.append(modal.fragment);
         this.modal.showModal();
     }
 

@@ -53,6 +53,7 @@
     --txt-clr-secondary: rgb(172, 172, 172);
 
     font-family: var(--default-font-family);
+    caret-color: var(--clr-primary-purple);
 }
 
 body {
@@ -90,13 +91,10 @@ body {
   width: 100%;
   border-radius: 20px;
   box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.342);
-  
-  display: flex;
-  flex-direction: column;
   box-sizing: border-box;
   
   justify-content: space-between;
-  padding: 20px;
+  padding: 30px 30px;
 }
 
 .hidden-btn {
@@ -105,10 +103,74 @@ body {
     transition: visibility 0.5s ease, opacity 0.5 ease;
 }
 
+.create-task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .create-task {
   grid-row: 2/-1;
 }
 
 .main {
   grid-row: 2/-1;
+}
+
+input[type="datetime-local"], select {
+    border: none;
+    padding: 10px;
+    border-radius: 100px;
+    color-scheme: dark;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  color: var(--txt-clr-secondary)
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    /* Turns the black icon into blue */
+    filter: invert(40%) sepia(100%) saturate(500%) hue-rotate(200deg);
+}
+
+textarea {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: white;
+  resize: none;
+  height: 400px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.basic-input {
+  outline: none;
+  border: none;
+  font-size: 2rem;
+  font-family: var(--default-font-family);
+  background-color: var(--dialog-bg);
+  padding: 10px 0px;
+  color: var(--txt-clr-main);
+  width: 30ch;
+}
+
+.create-task .basic-input {
+  background: none;
+  padding: 0;
+}
+
+.input-div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px
+}
+
+h4 {
+  padding: 0;
+  margin: 0;
+  color: var(--txt-clr-secondary);
 }
