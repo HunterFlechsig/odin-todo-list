@@ -46,7 +46,7 @@ function GetProjectInfo(project = {}) {
     input.name = form.formNames[0];
 
     const colorInput = document.createElement('input');
-    const colorLabel = document.createElement('label');
+    const colorLabel = document.createElement('label');    
     const colorDiv = document.createElement('div');
     colorInput.type = "color";
     colorInput.id = "color";

@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=edit,delete,star,arrow_upward" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=edit,delete,star,arrow_upward,add" />
     <title>Document</title>
 </head>
 <body>
@@ -14,16 +14,16 @@
         <div class="sidebar">
             <nav>
                 <ul class="tasks-list">
-                    <li id="my-day">
+                    <li id="my-day" class="sidebar-item" data-action="show">
                         My day
                     </li>
-                    <li id="all-tasks">
+                    <li id="all-tasks" class="sidebar-item" data-action="show">
                         All my tasks
                     </li>
                 </ul>
                 <ul class="proj-list">
-                    <li class="nav-title"><div>My Projects</div>
-                        <svg id="add-proj" class="plus" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                    <li class="nav-title sidebar-item"><div>My Projects</div>
+                        <button data-action="add-project"><span class="material-symbols-outlined">add</span></button>
                     </li>
                     
                 </ul>

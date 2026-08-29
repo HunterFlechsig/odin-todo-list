@@ -1,101 +1,68 @@
 import "./styles/styles.css";
 import ShowProject from "./components/project.js";
-import { AppData, Project, Todo } from "./classes.js";
+import { Project, Todo } from "./controllers/dataClasses.js";
 import { GetDeleteConfirmation, GetProjectInfo } from "./components/modals.js";
 import Sidebar from "./components/sidebar.js";
 import { MyDay, AllTasks } from "./components/lists.js";
 import CreateTaskInput from "./components/TaskCreate.js";
-
-class DataController {
-    static DATA_KEY = "data"
-
-    constructor() {
-        this.#hasData() ? this.#loadData() : this.#createAppData();
-        console.log("initial data:", this.data);
-    }
-
-    storeData = () => {
-        localStorage.setItem("data",JSON.stringify(this.data));
-        console.log(`Storing data: ${this.data}`)
-    }
-
-    #loadData = () => {
-        console.log("loading data");
-
-        const localData = JSON.parse(localStorage.getItem("data"));
-        this.data = AppData.fromJSON(localData);
-    }
-
-    #createAppData = () => {
-        console.log("creating data");
-        
-        this.data = new AppData();
-        this.storeData();
-    }
-
-    #hasData = () => {
-       if(localStorage.getItem("data")) {
-            return true;
-       }
-       return false;
-    }
-}
-
-function clearAndSet(element, fragment) {
-    element.replaceChildren();
-    element.appendChild(fragment);
-}
-
-function getFormDataAsObject(data) {
-    const formData = new FormData(data);
-    const formDataObj = Object.fromEntries(formData.entries());
-    console.log(formDataObj);
-    return formDataObj;
-}
+import DataController from "./controllers/dataController.js";
+import * as utils from "./controllers/utilities.js";
 
 // render forms and send data back
-class ModalFormController {
-    constructor(DataController) {
-        this.data = DataController
+class ModalController {
+    constructor() {
         this.modal = document.getElementById("dialog");
         this.modalForm = document.getElementById("dialog-form");
-        this.selectedItem = null;
-        this.callback = null;
+        this.data = {};
+    }
 
-        // on submit send data back to screen controller with callback
+    onAction(callback) {
         this.modalForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
-            if (this.callback) {
-                this.callback(getFormDataAsObject(e.target));
-            }
+            this.data["formData"] = utils.getFormDataAsObject(e.target)
 
+            callback({
+                action: this.action,
+                data: this.data,
+            });
             this.modal.close();
-        });
-
-        this.modal.addEventListener("keydown", (e) => {
-            if(e.keydown == "escape") {
-                this.modal.close();
-            }
-        })
+        });        
     }
 
     // takes a function to create form, data to fill the form in, 
     // a callback to do something with data recieved
-    #useModal(creationfunc, data, onSubmit) {
+    #useModal(creationfunc, data) {
         console.log("using modal")
         const modal = creationfunc(data);
-        clearAndSet(this.modalForm, modal.fragment);
-        this.callback = onSubmit;
+        utils.clearAndSet(this.modalForm, modal.fragment);
         this.modal.showModal();
     }
 
-    getProjectInfo(onSubmit, project = {}) {
-        this.#useModal(GetProjectInfo, project, onSubmit);
+    #modalAction = {
+        ["close"] : () => {
+            this.modal.close();
+        },
+
+        ["add-project"] : () =>{
+           this.#useModal(GetProjectInfo, {})
+        },
+
+        ["edit-project"] : (data) =>{
+           this.#useModal(GetProjectInfo, data.project)
+           this.data["projectId"] = data.project.id
+        },
+
+        ["delete"] : (data) => {
+            this.#useModal(GetDeleteConfirmation)
+            this.data["projectId"] = data.project.id
+        }
     }
 
-    getDeleteConfirmation(onSubmit) {
-        this.#useModal(GetDeleteConfirmation, {}, onSubmit);
+    open(state) {
+        console.log(state);
+        this.action = state.action;
+        this.#modalAction[state.action](state.data);
     }
 
 }
@@ -106,40 +73,40 @@ class SideBarController {
     static sidebarDataSetName = "sideBarId"
 
     constructor() {
-        this.projects = document.querySelector(".proj-list");
-        this.addProjectButton = document.getElementById("add-proj");
-        this.tasks = document.querySelector(".tasks-list");
-        this.lastSelectedItem = null;
+        this.sidebar = document.querySelector(".sidebar");
+        this.projects = document.querySelector(".proj-list")
     }
 
-    onAddProject(callback) {
-        this.addProjectButton.addEventListener("click", callback);
+    onAction(callback) {
+        this.sidebar.addEventListener("click", (e) => {
+            const sidebarItem = e.target.closest("[data-action]");
+            const id = e.target.closest("li").id;
+
+            if(!sidebarItem) return;
+
+            callback({
+                action: sidebarItem.dataset.action,
+                id: id,
+            })
+        })
     }
 
-    onSelectProject(callback) {
-        this.projects.addEventListener("click", callback);
-    }
-
-    onSelectTask(callback) {
-        this.tasks.addEventListener("click", callback)
-    }
-
-    #setSelectedItem(id) {
-        const item = document.getElementById(id);
-        item.classList.add("selected");
-        if(this.lastSelectedItem) {
-            const lastSelectedItem = document.getElementById(this.lastSelectedItem);
-            lastSelectedItem.classList.remove("selected");
-        }
-        this.lastSelectedItem = id; 
-    }
+    // #setSelectedItem(id) {
+    //     const item = document.getElementById(id);
+    //     item.classList.add("selected");
+    //     if(this.lastSelectedItem) {
+    //         const lastSelectedItem = document.getElementById(this.lastSelectedItem);
+    //         lastSelectedItem.classList.remove("selected");
+    //     }
+    //     this.lastSelectedItem = id; 
+    // }
 
     render(projects, selectedItemId) {
         const projectsList = Sidebar(projects);   
         this.projects.replaceChildren(this.projects.firstElementChild);
         this.projects.appendChild(projectsList);
 
-        if(selectedItemId) this.#setSelectedItem(selectedItemId);
+        // if(selectedItemId) this.#setSelectedItem(selectedItemId);
     }
 }
 
@@ -168,7 +135,7 @@ class MainContentController {
     onCreateTask(callback) {
         this.createTask.addEventListener("submit", (e) => {
             e.preventDefault();
-            const data = getFormDataAsObject(e.target);
+            const data = utils.getFormDataAsObject(e.target);
             console.log("on create teask", data);
             if(!data.title) return;
             callback(data);
@@ -178,7 +145,7 @@ class MainContentController {
     render(view) {
         console.log(view);
         if(!(view.type in this.#viewActions)) throw new Error(`View ${view.type} type doesnt Exist`)
-        clearAndSet(this.content, this.#viewActions[view.type](view.data));
+        utils.clearAndSet(this.content, this.#viewActions[view.type](view.data));
     }
 }
 
@@ -186,64 +153,67 @@ class AppController {
     constructor() {
         this.storage = new DataController();
         this.data = this.storage.data;
-        this.modal = new ModalFormController();
+        this.modal = new ModalController();
         this.sidebar = new SideBarController();
         this.main = new MainContentController();
         console.log(this.data.defualtProject);
-        this.#projectActions["show"](this.data.defualtProject);
+
+        this.modalState = {
+            action: "close",
+            data: {},
+        }
     }
 
-    #projectActions = {
-        show: (id) => {
-            this.view = {
-                type: "project",
-                data: this.data.getProject(id),
-                projectId: id,
-            }
-            this.selectedSideBarItem = id;
-        },
-
-        edit: (id) => {
-            const callback = formData => {
-                this.data.updateProject(id, formData.title, formData.color);
-                this.storage.storeData();
-                this.render();
-            }
-            this.modal.getProjectInfo(callback, this.data.getProject(id));
-        },
-
-        delete: (id) => {
-            this.modal.getDeleteConfirmation(() => {
-                if(!this.data.deleteProject(id)) {
-                    alert("Cannot remove dafualt project")
+    #sideBarAction = {
+        ["add-project"] : () => {
+            this.modal.open({
+                action: "add-project",
+                data: {
+                    project: {},
                 }
-                this.storage.storeData();
-                this.render()
             })
         },
 
-        star: (id) => {
-            this.data.setDefualtProject(id)
-            this.storage.storeData()
+        ["edit"]: (id) => {
+            this.modal.open({
+                action: "edit-project",
+                data: {
+                    project: this.data.getProject(id),
+                }
+            })
+        },
+
+        ["delete"]: (id) => {
+            this.modal.open({
+                action: "delete",
+                data: {
+                    project: this.data.getProject(id),
+                },
+            })
+        },
+
+        ["star"]: (id) => {
+            this.data.setDefualtProject(id);
         },
     }
 
-    #taskActions = {
-        ["my-day"]: () => {
-            this.view = {
-                type: "myDay",
-                data: this.data.getTodaysTasks(),
-                projectId: this.data.defualtProject,
-            }
+    #ModalAction = {
+        ["add-project"] : (data) => {
+            const { title, color } = data.formData
+            this.data.addProject(new Project(utils.capatalize(title), color));
+            this.storage.storeData();
         },
 
-        ["all-tasks"]: () => {
-            this.view = {
-                type: "allTasks",
-                data: this.data.getAllTasks(),
-                projectId: this.data.defualtProject,
-            }
+        ["edit-project"] : (data) => {
+            const { formData, projectId } = data;
+            const { title, color } = formData;
+            this.data.updateProject(projectId, title, color);
         },
+
+        ["delete"] : (data) => {
+            const { projectId } = data.projectId;
+            this.data.deleteProject(projectId);
+        }
     }
 
     init() {
@@ -252,47 +222,28 @@ class AppController {
     }
 
     bindEvents() {
-        this.sidebar.onAddProject(() => {
-            this.modal.getProjectInfo(formData => {
-                const title = formData.title.charAt(0).toUpperCase() + formData.title.slice(1);
-                if(!this.data.addProject(new Project(title, formData.color))) {
-                    alert("Project already exists");
-                }
-                this.storage.storeData();
-                this.render();
-            });
-        })
-
-        this.sidebar.onSelectProject((e) => {
-            const project = e.target.closest(".sidebar-project");
-            if (!project) return;
-
-            const projectId = project.id;
-            const action = e.target.closest("[data-action]")?.dataset.action ?? "show";
-
-            console.log(projectId, action);
-            this.#projectActions[action](projectId);
+        this.sidebar.onAction((action) => {
+            console.log(action);
+            this.#sideBarAction[action.action](action.id);
             this.render();
         })
 
-        this.sidebar.onSelectTask((e) => {
-            const itemId = e.target.id;
-            console.log("clicked tasks: ", itemId);
-            this.selectedSideBarItem = itemId;
-            this.#taskActions[itemId]();
+        this.modal.onAction((action) => {
+            console.log(action);
+            this.#ModalAction[action.action](action.data);
             this.render();
         })
 
-        this.main.onCreateTask((formData) => {
-            const todo = new Todo(formData.title);
-            this.data.getProject(this.view.projectId).addTodo(todo);
-            this.storage.storeData();
-        })
+        // this.main.onCreateTask((formData) => {
+        //     const todo = new Todo(formData.title);
+        //     this.data.getProject(this.view.projectId).addTodo(todo);
+        //     this.storage.storeData();
+        // })
     }
 
     render() {
         this.sidebar.render(this.data.Projects, this.selectedSideBarItem);
-        this.main.render(this.view);
+        // this.main.render(this.view);
     }
 }
 

@@ -94,32 +94,96 @@ body {
   
   display: flex;
   flex-direction: column;
+  
   justify-content: space-between;
-}
-
-.add-task input {
-  background-color: var(--clr-content);
-  border: 2px solid var(--txt-clr-secondary);
-  color: var(--txt-clr-secondary);
-  font-size: 1.25rem;
-  border-radius: 10px;
-  outline: none;
-  padding: 10px 35px 10px 15px;  
-  width: 75%;
 }
 
 .add-task {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.24);
+}
+
+.add-task-other {
+  padding-top: 10px;
+  transition: visibility 0.5s ease, opacity 0.5 ease;
+  display: none;
+}
+
+.add-task-title {
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 10px 10px;
-  box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.24);
+  position: relative;
+  flex-direction: column;
+  width: 100%;
 }
+
+.add-task-title input {
+  background-color: var(--clr-content);
+  border: 1px solid var(--txt-clr-secondary);
+  color: var(--txt-clr-secondary);
+  font-size: 1.25rem;
+  border-radius: 10px;
+  outline: none;
+  padding: 10px 35px 10px 35px;  
+  width: 95%;
+  box-sizing: border-box;
+}
+
 
 .add-task button{
   background: none;
   color: var(--txt-clr-secondary);
   border: none;
-  position: relative;
-  right: 40px
+  position: absolute;
+  left: 91%;
+}
+
+.add-task-title input:hover{
+  border: 1px solid var(--clr-primary-purple);
+}
+
+.add-task-title input:focus{
+  border: 1px solid var(--clr-primary-purple);
+}
+
+.add-task-title input {
+  color: white;
+  font-family: var();
+}
+
+.add-task-title-icon {
+  color: var(--clr-primary-purple);
+  cursor: pointer;
+}
+
+.hidden-btn {
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0.5s ease, opacity 0.5 ease;
+}
+
+.add-task-title input:focus ~ span.add-task-plus  {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.add-task-plus {
+  position: absolute;
+  opacity: 1;
+  visibility: visible;
+  right: 91.5%;
+  transition: visibility 0.5s ease, opacity 0.5 ease;
+}
+
+.add-task-title input:focus {
+  padding-left: 10px;
+}
+
+.add-task-title input:focus ~ button {
+    opacity: 1;
+    visibility: visible;
 }

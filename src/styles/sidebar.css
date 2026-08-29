@@ -5,7 +5,6 @@
     --title-size: calc(var(--text-size) * 1.25);
     --title-weight: 700;
 
-
     width: 250px;
     background-color: var(--clr-sidebar);
     color: var(--txt-clr-secondary);
@@ -27,7 +26,7 @@
     flex-direction: column;
 }
 
-.sidebar ul > li {
+.sidebar-item {
     padding: 15px 20px;
     transition: background-color 0.5s ease, transform 0.5s ease;
 
@@ -37,25 +36,27 @@
     gap: 10px
 }
 
-.sidebar ul > li:hover {
+.sidebar-item:hover {
     background-color: var(--clr-sidebar-hover);
     cursor: pointer;
 }
 
-.hidden-btn {
-    opacity: 0;
-    visibility: hidden;
-    transition: color 0.5s ease;
-    font-size: 1.25rem;
-    color: grey;
-}
-
-.hidden-btn:hover {
+.sidebar .hidden-btn:hover {
     color: var(--clr-primary-purple);
     transform: scale(1.2);
 }
 
-.sidebar ul > li:hover .hidden-btn {
+.sidebar-icon {
+    font-size: 1.25rem;
+    color: grey;
+}
+
+.sidebar-icon:hover {
+    color: var(--clr-primary-purple);
+    transform: scale(1.2);
+}
+
+.sidebar-item:hover .hidden-btn {
     opacity: 1;
     visibility: visible;
 }
@@ -78,14 +79,22 @@
     margin-top: 15px; 
 }
 
-.sidebar .nav-title img {
-    width: var(--title-size);
+.sidebar .nav-title span {
+    font-size: 1.5rem;
+    color: white;
+
     position: relative;
-    top: 2px;
+    top: 3px;
 }
 
-.sidebar .plus:hover {
-    fill: var(--clr-primary-purple);
+.sidebar .nav-title button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.sidebar .nav-title span:hover {
+    color: var(--clr-primary-purple);
 }
 
 /* /////////// */

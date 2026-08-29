@@ -11,7 +11,7 @@ export default function Sidebar(projects) {
         span.textContent = project.name;
         item.dataset["action"] = "show"
         item.id = project.id;
-        item.classList.add("sidebar-project")
+        item.classList.add("sidebar-item")
         
         const dot = document.createElement("span");
         dot.classList.add("project-color");
@@ -23,7 +23,7 @@ export default function Sidebar(projects) {
         const edit = document.createElement("span");
         edit.textContent = "edit";
         edit.dataset["action"] = "edit"
-        edit.classList.add("material-symbols-outlined", "hidden-btn")
+        edit.classList.add("material-symbols-outlined", "hidden-btn", "sidebar-icon")
 
         let star = document.createElement("span");
         let deleteSpan = document.createElement("span");
@@ -36,11 +36,11 @@ export default function Sidebar(projects) {
         if(index > 0) {
             deleteSpan.textContent = "delete";
             deleteSpan.dataset["action"] = "delete"
-            deleteSpan.classList.add("material-symbols-outlined", "hidden-btn")
+            deleteSpan.classList.add("material-symbols-outlined", "hidden-btn", "sidebar-icon")
 
             star.textContent = "star";
             star.dataset["action"] = "star"
-            star.classList.add("material-symbols-outlined", "hidden-btn")
+            star.classList.add("material-symbols-outlined", "hidden-btn", "sidebar-icon")
         }
 
         item.append(dot, span, fill, star, edit, deleteSpan);

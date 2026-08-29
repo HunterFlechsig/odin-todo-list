@@ -66,7 +66,6 @@ class Project extends storageItem{
     static fromJSON(data) {
         const project = new Project(data.name, data.color);
         project.id = data.id;
-        console.log("fromJSON proj", data);
         project.todos = data.todos.map(Todo.fromJSON);
         return project;
     }
