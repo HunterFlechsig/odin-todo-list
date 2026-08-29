@@ -4,68 +4,10 @@ import { Project, Todo } from "./controllers/dataClasses.js";
 import { GetDeleteConfirmation, GetProjectInfo } from "./components/modals.js";
 import Sidebar from "./components/sidebar.js";
 import { MyDay, AllTasks } from "./components/lists.js";
-import CreateTaskInput from "./components/TaskCreate.js";
-import DataController from "./controllers/dataController.js";
+import CreateTask from "./components/createTask.js";
+import Data from "./controllers/data.js";
 import * as utils from "./controllers/utilities.js";
-
-// render forms and send data back
-class ModalController {
-    constructor() {
-        this.modal = document.getElementById("dialog");
-        this.modalForm = document.getElementById("dialog-form");
-        this.data = {};
-    }
-
-    onAction(callback) {
-        this.modalForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-
-            this.data["formData"] = utils.getFormDataAsObject(e.target)
-
-            callback({
-                action: this.action,
-                data: this.data,
-            });
-            this.modal.close();
-        });        
-    }
-
-    // takes a function to create form, data to fill the form in, 
-    // a callback to do something with data recieved
-    #useModal(creationfunc, data) {
-        console.log("using modal")
-        const modal = creationfunc(data);
-        utils.clearAndSet(this.modalForm, modal.fragment);
-        this.modal.showModal();
-    }
-
-    #modalAction = {
-        ["close"] : () => {
-            this.modal.close();
-        },
-
-        ["add-project"] : () =>{
-           this.#useModal(GetProjectInfo, {})
-        },
-
-        ["edit-project"] : (data) =>{
-           this.#useModal(GetProjectInfo, data.project)
-           this.data["projectId"] = data.project.id
-        },
-
-        ["delete"] : (data) => {
-            this.#useModal(GetDeleteConfirmation)
-            this.data["projectId"] = data.project.id
-        }
-    }
-
-    open(state) {
-        console.log(state);
-        this.action = state.action;
-        this.#modalAction[state.action](state.data);
-    }
-
-}
+import Modal from "./controllers/modal.js";
 
 // render and controll sidebar 
 class SideBarController {
@@ -113,12 +55,13 @@ class MainContentController {
 
     constructor() {
         this.content = document.querySelector(".content");
-        this.createTask = CreateTaskInput(MainContentController.inputId);
     }
 
     #viewActions = {
         project : (project) => {
-            return ShowProject(project, this.createTask);
+            const fragement = document.createDocumentFragment();
+            fragement.append(ShowProject(project), CreateTask());
+            return fragement;
         },
 
         myDay: () => {
@@ -129,33 +72,26 @@ class MainContentController {
             return AllTasks();
         }
     }
-
-    // onCreateTask(callback) {
-    //     this.createTask.addEventListener("submit", (e) => {
-    //         e.preventDefault();
-    //         const data = utils.getFormDataAsObject(e.target);
-    //         console.log("on create teask", data);
-    //         if(!data.title) return;
-    //         callback(data);
-    //     })
-    // }    
+  
 
     render(view) {
-        console.log(view);
-        if(!(view.type in this.#viewActions)) throw new Error(`View ${view.type} type doesnt Exist`)
+        console.log("view" , view);
         utils.clearAndSet(this.content, this.#viewActions[view.type](view.data));
     }
 }
 
 class AppController {
     constructor() {
-        this.storage = new DataController();
+        this.storage = new Data();
         this.data = this.storage.data;
-        this.modal = new ModalController();
+        this.modal = new Modal();
         this.sidebar = new SideBarController(this.data.defualtProject.id);
         this.main = new MainContentController();
 
-        console.log(this.data.defualtProject);
+        this.view = {
+            type: "project",
+            data: this.data.defualtProject,
+        }
     }
 
     #sideBarAction = {
@@ -191,7 +127,10 @@ class AppController {
         },
 
         ["show"]: (id) => {
-            console.log("Show something on main");
+            this.view = {
+                type: "project",
+                data: this.data.getProject(id),
+            }
         }
     }
 
@@ -241,9 +180,8 @@ class AppController {
 
     render() {
         this.sidebar.render(this.data.Projects);
-        // this.main.render(this.view);
+        this.main.render(this.view);
     }
 }
 
 const app = new AppController().init();
-export { SideBarController }

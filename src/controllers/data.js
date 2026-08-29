@@ -1,6 +1,6 @@
 import { AppData } from "./dataClasses.js";
 
-export default class DataController {
+export default class Data {
     static DATA_KEY = "data"
 
     constructor() {
