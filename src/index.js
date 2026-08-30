@@ -1,13 +1,11 @@
 import "./styles/styles.css";
-import ShowProject from "./components/project.js";
 import { Project, Todo } from "./controllers/dataClasses.js";
-import { GetDeleteConfirmation, GetProjectInfo } from "./components/modals.js";
 import Sidebar from "./components/sidebar.js";
 import { MyDay, AllTasks } from "./components/lists.js";
-import CreateTask from "./components/createTask.js";
 import Data from "./controllers/data.js";
 import * as utils from "./controllers/utilities.js";
 import Modal from "./controllers/modal.js";
+import Main from "./components/main.js";
 
 // render and controll sidebar 
 class SideBarController {
@@ -55,15 +53,17 @@ class MainContentController {
 
     constructor() {
         this.content = document.querySelector(".content");
+        this.bindEvents();
     }
 
     #viewActions = {
         project : (data) => {
-            const { selectedProject, projects } = data
-            const fragement = document.createDocumentFragment();
-            console.log(data);
-            fragement.append(ShowProject(selectedProject), CreateTask({}, projects, selectedProject));
-            return fragement;
+            const { selectedProject, projects } = data;
+            const task = this.selectedTodoId ? selectedProject.getTodo(this.selectedTodoId) : {};
+
+            console.log("task", this.selectedTodoId, task);
+
+            return Main(selectedProject, projects, task);
         },
 
         myDay: () => {
@@ -72,11 +72,90 @@ class MainContentController {
 
         allTasks: () => {
             return AllTasks();
+        },
+
+        add: () => {
+            this.selectedTodoId = null;
+            this.render(this.view)
+        },
+
+        show: (id) => {
+            console.log("setting selectedTodoId")
+            this.selectedTodoId = id;
+            this.render(this.view)
         }
     }
-  
+
+    bindEvents() {
+        this.content.addEventListener("click", (e) => {
+            const action = e.target.closest("[data-action]");       
+            const id = e.target.closest("[id]").id;    
+            if(!action || !id) return;
+
+            this.#viewActions[action.dataset.action](id);            
+        })
+    }
+
+    onAction(callback) {
+        this.content.addEventListener("submit", (e) => {
+            const checkEmpty = () => {
+                const form = document.getElementById("create-task-form");
+                const taskData = utils.getFormDataAsObject(form);
+                return taskData.title === "" ? false : taskData; 
+            }
+
+            if(!this.selectedTodoId) {
+                const taskData = checkEmpty()
+                if(taskData) {
+                    callback({
+                        action: 'create-task',
+                        data: {
+                            taskData: taskData,
+                            project: this.data.selectedProject,
+                        }
+                    })
+                }
+            };
+        })
+        // this.content.addEventListener("focusout", (e) => {
+        //     const action = e.target.dataset["action"];
+        //     if(!action) return;
+
+        //     const checkEmpty = () => {
+        //         const form = document.getElementById("create-task-form");
+        //         const taskData = utils.getFormDataAsObject(form);
+        //         return taskData.title === "" ? false : taskData; 
+        //     }
+
+        //     // const id = e.target.closest("[data-taskId]");
+        //     // const form = document.getElementById("create-task-form");
+        //     // const taskData = utils.getFormDataAsObject(form);
+
+        //     if(!this.selectedTodoId) {
+        //         const taskData = checkEmpty()
+        //         console.log("task data: ", taskData)
+        //         if(taskData) {
+        //             callback({
+        //                 action: 'create-task',
+        //                 data: {
+        //                     taskData: taskData,
+        //                     project: this.data.selectedProject,
+        //                 }
+        //             })
+
+        //             this.selectedTodoId = taskData.id;
+        //         }
+        //     };
+        // })
+    }
+
+    #reRender() {
+
+    }
 
     render(view) {
+        this.view = view //save for rerendering only main
+        console.log("render main", view);
         utils.clearAndSet(this.content, this.#viewActions[view.type](view.data));
     }
 }
@@ -154,9 +233,19 @@ class AppController {
         }
     }
 
+    #viewActions = {
+        ["create-task"]: (data) => {
+            const { title, desc, dueDate, priority, status } = data.taskData;
+            const project = data.project;
+            console.log("created task", project);
+            project.addTodo(new Todo(title, desc, dueDate, priority, status));
+            this.storage.storeData();
+        }
+    }
+
     init() {
-        this.bindEvents();
         this.render();
+        this.bindEvents();
     }
 
     bindEvents() {
@@ -172,11 +261,11 @@ class AppController {
             this.render();
         })
 
-        // this.main.onCreateTask((formData) => {
-        //     const todo = new Todo(formData.title);
-        //     this.data.getProject(this.view.projectId).addTodo(todo);
-        //     this.storage.storeData();
-        // })
+        this.main.onAction((action) => {
+            console.log(action);
+            this.#viewActions[action.action](action.data);
+            this.render();
+        })
     }
 
     render() {

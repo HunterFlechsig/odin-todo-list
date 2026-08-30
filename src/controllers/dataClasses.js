@@ -59,6 +59,10 @@ class Project extends storageItem{
         this.todos.push(todo);
     }
 
+    getTodo(id) {
+        return this.todos.find(todo => todo.id === id)
+    }
+
     static isEqual(Project1, Project2) {
         return Project1.id === Project2.id;
     }
