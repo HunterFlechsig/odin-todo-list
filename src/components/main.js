@@ -40,8 +40,19 @@ function TodoList(todos, selectedTodo) {
         item.classList.add("todo-item");
         item.dataset["mainAction"] = "show";
         
+        const label = document.createElement("label");
         const input = document.createElement("input");
-        input.dataset["mainAction"] = "done";
+        input.name = todo.id;
+        input.type = "checkbox";
+        input.checked = todo.status === Todo.STATUS.DONE;
+        input.dataset["mainAction"] = "change"
+
+        if(todo.status === Todo.STATUS.DONE) {
+            item.style.textDecoration = "line-through";
+        }
+
+        label.append(input);
+        item.append(label)
         ul.appendChild(item);
     });
 
@@ -103,13 +114,13 @@ function CreateTask(task = {}, projects, selectedProject) {
 
     const createDate = () => {
         const label = document.createElement("label");
-        label.htmlFor = "data";
+        label.htmlFor = "dueDate";
         label.textContent = "Due Date";
 
         const date = document.createElement("input"); 
         date.type = "datetime-local";
         date.name = "dueDate";
-        date.id = "date";
+        date.id = "dueDate";
         if(!dueDate) {
             const now = new Date();
             now.setDate(now.getDate() + 1);
@@ -136,7 +147,6 @@ function CreateTask(task = {}, projects, selectedProject) {
         Object.keys(Todo.PRIORITY).forEach(p => {
             const option = document.createElement("option");
             option.value = Todo.PRIORITY[p];
-            console.log(priority)
             if(+priority === Todo.PRIORITY[p]) option.selected = true;
             option.textContent = Todo.PRIORITY[p];
             select.append(option);

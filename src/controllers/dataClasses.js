@@ -42,6 +42,10 @@ class Todo extends storageItem {
         return new Date() > this.dueDate
     }
 
+    updateStatus() {
+        this.status = this.status === Todo.STATUS.OPEN ? Todo.STATUS.DONE : Todo.STATUS.OPEN;
+    }
+
     static fromJSON(data) {
         const {title, desc, dueDate, priority, status} = data
         const todo = new Todo(title, desc, dueDate, priority, status);
@@ -71,6 +75,10 @@ class Project extends storageItem{
     updateTodo(id, todoIn) {
         const todo = this.getTodo(id);
         todo.update(todoIn);        
+    }
+
+    updateTodoStatus(id) {
+        this.getTodo(id).updateStatus();        
     }
 
     deleteTodo(id) {

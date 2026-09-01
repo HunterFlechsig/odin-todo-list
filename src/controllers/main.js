@@ -14,8 +14,7 @@ export default class MainController {
     #mainActions = {
         project : (data) => {
             const { selectedProject, projects } = data;
-            const task = this.selectedTodoId ? selectedProject.getTodo(this.selectedTodoId) : selectedProject.getFirstTodo();
-            console.log("first-todo",selectedProject);
+            const task = this.selectedTodoId ? selectedProject.getTodo(this.selectedTodoId) : {};
 
             return Main(selectedProject, projects, task);
         },
@@ -30,30 +29,16 @@ export default class MainController {
 
         add: () => {
             this.selectedTodoId = null;
-            this.render(this.view)
         },
 
         show: (id) => {
             this.selectedTodoId = id;
-            this.render(this.view)
+
         },
 
-        ["create-task"]: (taskData, project) => {
-            const { title, desc, dueDate, priority, status } = taskData;
-            
-            project.addTodo(new Todo(title, desc, dueDate, priority, status));
-            storage.storeData();
-            this.render(this.view)
-        },
-
-        ["edit-task"]: (taskData, oldProjId, taskId) => {
-            const { title, desc, dueDate, priority, status } = taskData;
-            console.log("edit-task", taskData);
-            const newProjId = taskData.project;
-
-            data.updateTodo(oldProjId, newProjId, taskId, new Todo(title, desc, dueDate, priority, status));
-            storage.storeData();
-            this.render(this.view)
+        change:(id) => {
+            const project = this.view.data.selectedProject;
+            project.updateTodoStatus(id);     
         }
     }
 
@@ -65,28 +50,44 @@ export default class MainController {
         }
 
         this.content.addEventListener("click", (e) => {
-            const action = e.target.closest("[data-main-action]");     
-            if(!action || !action.id) return;
+            const action = e.target.closest("[data-main-action]");  
+            const id = e.target.closest("[id]"); 
+            if(!action || !id) return;
 
-            this.#mainActions[action.dataset["mainAction"]](action.id);            
+            this.#mainActions[action.dataset["mainAction"]](id.id);          
+            this.render(this.view)  
         })
 
+        this.content.addEventListener('change', (event) => {
+            console.log("here");
+            const id = event.target.closest("[id]").id;   
+            if (event.target.checked) {
+      
+            }
+        });
+
         this.content.addEventListener("submit", (e) => {
-            e.preventDefault()
-            
-            if(!this.selectedTodoId) {
-                const taskData = checkEmpty()
-                if(taskData) {
-                    this.#mainActions["create-task"](taskData, this.view.data.selectedProject)
-                }
+            // e.preventDefault()
+            const taskData = checkEmpty()
+            if(!this.selectedTodoId && taskData) {
+                const { title, desc, dueDate, priority, status } = taskData;
+                const project = this.view.data.selectedProject
+                
+                project.addTodo(new Todo(title, desc, dueDate, priority, status));
+                storage.storeData();
+                this.render(this.view)
             };
 
-            if(this.selectedTodoId) {
-                const taskData = checkEmpty()
-                if(taskData) {
-                    this.#mainActions['edit-task'](taskData, this.view.data.selectedProject.id, this.selectedTodoId)
-                }
-            };
+            if(this.selectedTodoId && taskData) {
+                const { title, desc, dueDate, priority, status } = taskData;
+                const newProjId = taskData.project;
+                const oldProjId = this.view.data.selectedProject.id
+                const taskId = this.selectedTodoId
+
+                data.updateTodo(oldProjId, newProjId, taskId, new Todo(title, desc, dueDate, priority, status));
+                storage.storeData();
+                this.render(this.view)
+            }
         })
     }
 
