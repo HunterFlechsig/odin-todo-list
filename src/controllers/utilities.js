@@ -6,7 +6,6 @@ function clearAndSet(element, fragment) {
 function getFormDataAsObject(data) {
     const formData = new FormData(data);
     const formDataObj = Object.fromEntries(formData.entries());
-    console.log(formDataObj);
     return formDataObj;
 }
 

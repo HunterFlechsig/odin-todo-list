@@ -29,6 +29,15 @@ class Todo extends storageItem {
         this.id = crypto.randomUUID();
     }
 
+    update(todo) {
+        const { title, desc, dueDate, priority, status } = todo;
+        this.title = title;
+        this.desc = desc;
+        this.dueDate = dueDate;
+        this.priority = priority;
+        this.status = status
+    }
+
     isOverDue() {
         return new Date() > this.dueDate
     }
@@ -59,8 +68,21 @@ class Project extends storageItem{
         this.todos.push(todo);
     }
 
+    updateTodo(id, todoIn) {
+        const todo = this.getTodo(id);
+        todo.update(todoIn);        
+    }
+
+    deleteTodo(id) {
+        this.todos = this.todos.filter(todo => todo.id !== id);
+    }
+
     getTodo(id) {
         return this.todos.find(todo => todo.id === id)
+    }
+
+    getFirstTodo() {
+        return this.todos.length >= 1 ? this.todos[0] : {};
     }
 
     static isEqual(Project1, Project2) {
@@ -103,6 +125,17 @@ class AppData extends storageItem {
         
         this.Projects.push(project);
         return true;
+    }
+
+    updateTodo(oldProjId, newProjId, todoId, todo) {
+        if(oldProjId === newProjId) {
+            this.getProject(oldProjId).updateTodo(todoId, todo);
+        } else {
+            this.getProject(oldProjId).deleteTodo(todoId);
+            todo.id = todoId;
+            this.getProject(newProjId).addTodo(todo)
+        }
+
     }
 
     getProject(id) {

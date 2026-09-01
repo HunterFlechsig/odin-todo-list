@@ -1,3 +1,5 @@
+import { Todo } from "../controllers/dataClasses.js";
+
 function ShowProject(project, TodoList) {
     const fragment = document.createDocumentFragment();
 
@@ -7,7 +9,7 @@ function ShowProject(project, TodoList) {
         span.textContent = "add";
         span.classList.add("material-symbols-outlined");
         button.append(span);
-        button.dataset.action = "add";
+        button.dataset["mainAction"] = "add";
         button.id = "create-todo";
 
         return button;
@@ -30,24 +32,24 @@ function ShowProject(project, TodoList) {
 
 function TodoList(todos, selectedTodo) {
     const ul = document.createElement("ul");
-    ul.dataset.action = "show"
 
     todos.forEach((todo, index) => {
         const item = document.createElement("li");
         item.textContent = todo.title;
         item.id = todo.id;
         item.classList.add("todo-item");
+        item.dataset["mainAction"] = "show";
+        
+        const input = document.createElement("input");
+        input.dataset["mainAction"] = "done";
         ul.appendChild(item);
     });
 
     return ul;
 }
 
-import { Todo } from "../controllers/dataClasses.js";
-
 function CreateTask(task = {}, projects, selectedProject) {
-    const { desc, dueDate, id, priority, status, title } = task;
-    console.log("task create", title);
+    const { desc, dueDate, priority, status, title } = task;
 
     const titleInput = () => {
         const input = document.createElement("input");
@@ -59,7 +61,7 @@ function CreateTask(task = {}, projects, selectedProject) {
         if(title) {
             input.value = title
         } else {
-            input.placeholder = "add task name"
+            input.placeholder = "Create New Task"
         }
         return input;
     }
@@ -72,7 +74,7 @@ function CreateTask(task = {}, projects, selectedProject) {
         const notesInput = document.createElement("textarea");
         notesInput.id = "notes";
         notesInput.name = "desc";
-        desc ? notesInput.textContent = title : notesInput.placeholder = "Insert your notes here";
+        desc ? notesInput.textContent = desc : notesInput.placeholder = "Insert your notes here";
 
         notesLabel.append(notesInput);
         return notesLabel;
@@ -90,7 +92,7 @@ function CreateTask(task = {}, projects, selectedProject) {
         projects.forEach(project => {
             const option = document.createElement("option");
             if(selectedProject.id === project.id) option.selected = true;
-            option.value = project.name;
+            option.value = project.id;
             option.textContent = project.name;
             select.append(option);
         });        
@@ -106,12 +108,16 @@ function CreateTask(task = {}, projects, selectedProject) {
 
         const date = document.createElement("input"); 
         date.type = "datetime-local";
-        date.name = "date";
+        date.name = "dueDate";
         date.id = "date";
-        const now = new Date();
-        now.setDate(now.getDate() + 1);
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        date.value = now.toISOString().slice(0, 16);
+        if(!dueDate) {
+            const now = new Date();
+            now.setDate(now.getDate() + 1);
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            date.value = now.toISOString().slice(0, 16);
+        } else {
+            date.value = dueDate;
+        }
 
         label.append(date);
 
@@ -130,6 +136,8 @@ function CreateTask(task = {}, projects, selectedProject) {
         Object.keys(Todo.PRIORITY).forEach(p => {
             const option = document.createElement("option");
             option.value = Todo.PRIORITY[p];
+            console.log(priority)
+            if(+priority === Todo.PRIORITY[p]) option.selected = true;
             option.textContent = Todo.PRIORITY[p];
             select.append(option);
         });        
@@ -146,6 +154,11 @@ function CreateTask(task = {}, projects, selectedProject) {
     const form = document.createElement("form");
     form.id = "create-task-form";
 
+    const hiddenStatus = document.createElement("input");
+    hiddenStatus.type = 'hidden';
+    hiddenStatus.name = 'status';
+    hiddenStatus.value = task.status ? task.status : Todo.STATUS.OPEN;
+
     const inputDiv = document.createElement("div");
     inputDiv.classList = "input-div";
 
@@ -155,14 +168,12 @@ function CreateTask(task = {}, projects, selectedProject) {
     inputDiv.append(createDate(), createProjectsDropDown(), createPriority());
     form.append(topTitle, titleInput(), inputDiv, createNotesInput());
 
-    if(!title) {
-        const button = document.createElement("button");
-        button.type = "submit";
-        button.textContent = "Create"
-        button.classList.add("submit-btn");
-        button.textContent = "create";
-        form.append(button);
-    }
+    const button = document.createElement("button");
+    button.type = "submit";
+    button.textContent = "Create"
+    button.classList.add("submit-btn");
+    button.textContent = title ? "Update" : "Create";
+    form.append(button);
 
     div.append(form);
 

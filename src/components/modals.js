@@ -20,8 +20,6 @@ const createSubmitBtn = (text) => {
 }
 
 function GetDeleteConfirmation() {
-    console.log("checking Delete")
-
     const form = new ModalformData([])
 
     const title = document.createElement('h1');
@@ -34,8 +32,6 @@ function GetDeleteConfirmation() {
 }
 
 function GetProjectInfo(project = {}) {
-    console.log("making getProject: ", project)
-
     const form = new ModalformData(['title','color']);
 
     const input = document.createElement('input');

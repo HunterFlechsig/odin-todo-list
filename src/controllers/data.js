@@ -18,9 +18,7 @@ export default class Data {
         this.data = AppData.fromJSON(localData);
     }
 
-    #createAppData = () => {
-        console.log("creating data");
-        
+    #createAppData = () => {        
         this.data = new AppData();
         this.storeData();
     }
@@ -32,3 +30,9 @@ export default class Data {
        return false;
     }
 }
+
+const appData = new Data();
+const data = appData.data;
+const storage = appData;
+
+export { data, storage }
