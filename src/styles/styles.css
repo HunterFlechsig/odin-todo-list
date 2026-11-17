@@ -211,3 +211,46 @@ h4 {
   border-color: rgba(124, 103, 243, 0.986);
   color: var(--clr-primary-purple);
 }
+
+.main ul {
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px
+}
+
+.todo-item button {
+  width: fit-content;
+  border-radius: 10px;
+  margin-left: auto;
+  color: var(--clr-content);
+  background-color: var(--clr-primary-purple);
+  font-size: 1rem;
+  border: none;
+}
+
+.todo-item button:hover {
+  background-color: rgb(95, 69, 238);
+  color: var(--clr-content);
+}
+
+input[type="checkbox"] {
+  accent-color: var(--clr-primary-purple);
+  background-color: var(--clr-primary-purple);
+}
+
+.project-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  color: var(--txt-clr-secondary);
+  font-size: 0.85rem;
+}

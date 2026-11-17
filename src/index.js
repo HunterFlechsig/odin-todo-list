@@ -4,7 +4,6 @@ import { data, storage } from "./controllers/data.js";
 import Modal from "./controllers/modal.js";
 import MainController from "./controllers/main.js";
 
-// render and controll sidebar 
 class SideBarController {
     static projectDataSetName = "projectId"
     static sidebarDataSetName = "sideBarId"
@@ -88,6 +87,25 @@ class AppController {
 
         ["star"]: (id) => {
             this.data.setDefualtProject(id);
+            this.storage.storeData();
+        },
+
+        ["my-day"]: () => {
+            this.view = {
+                type: "myDay",
+                data: {
+                    todos: this.data.getTodaysTasks(),
+                }
+            }
+        },
+
+        ["all-tasks"]: () => {
+            this.view = {
+                type: "allTasks",
+                data: {
+                    todos: this.data.getAllTasks(),
+                }
+            }
         },
 
         ["show"]: (id) => {

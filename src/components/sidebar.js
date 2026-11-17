@@ -1,4 +1,3 @@
-import { SideBarController } from "../index.js";
 import "../styles/sidebar.css"
 
 export default function Sidebar(projects) {

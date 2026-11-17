@@ -33,26 +33,37 @@ function ShowProject(project, TodoList) {
 function TodoList(todos, selectedTodo) {
     const ul = document.createElement("ul");
 
+    const deleteButton = () => {
+        const button = document.createElement("button");
+        button.textContent = "X";
+        button.style.display = "none"
+        button.dataset["mainAction"] = "delete"
+        return button
+    }
+
     todos.forEach((todo, index) => {
         const item = document.createElement("li");
-        item.textContent = todo.title;
+        const text = document.createElement("span")
+        text.textContent = todo.title;
         item.id = todo.id;
         item.classList.add("todo-item");
         item.dataset["mainAction"] = "show";
-        
+
         const label = document.createElement("label");
         const input = document.createElement("input");
         input.name = todo.id;
         input.type = "checkbox";
         input.checked = todo.status === Todo.STATUS.DONE;
         input.dataset["mainAction"] = "change"
+        const button = deleteButton()
 
         if(todo.status === Todo.STATUS.DONE) {
-            item.style.textDecoration = "line-through";
+            text.style.textDecoration = "line-through";
+            button.style.display = "block"
         }
 
         label.append(input);
-        item.append(label)
+        item.append(label, text, button)
         ul.appendChild(item);
     });
 
@@ -176,7 +187,7 @@ function CreateTask(task = {}, projects, selectedProject) {
     topTitle.textContent = `Projects > ${selectedProject.name}`
 
     inputDiv.append(createDate(), createProjectsDropDown(), createPriority());
-    form.append(topTitle, titleInput(), inputDiv, createNotesInput());
+    form.append(topTitle, titleInput(), inputDiv, createNotesInput(), hiddenStatus);
 
     const button = document.createElement("button");
     button.type = "submit";
