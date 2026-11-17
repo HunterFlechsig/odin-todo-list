@@ -117,10 +117,9 @@ class AppData extends storageItem {
     setDefualtProject(id) {
         const proj = this.getProject(id);
         if(proj.id === this.defualtProject.id) return;
-   
 
         this.deleteProject(id);
-        this.defualtProject = proj.id;
+        this.defualtProject = proj;
         this.Projects.unshift(proj)
     }
 
@@ -151,11 +150,27 @@ class AppData extends storageItem {
     }
 
     getTodaysTasks() {
-        return {};
+        const today = new Date();
+        const todos = [];
+        this.Projects.forEach(project => {
+            project.todos.forEach(todo => {
+                const dueDate = new Date(todo.dueDate);
+                if (dueDate.toDateString() === today.toDateString()) {
+                    todos.push({ todo, projectName: project.name, projectColor: project.color });
+                }
+            });
+        });
+        return todos;
     }
 
     getAllTasks() {
-        return {};
+        const todos = [];
+        this.Projects.forEach(project => {
+            project.todos.forEach(todo => {
+                todos.push({ todo, projectName: project.name, projectColor: project.color });
+            });
+        });
+        return todos;
     }
 
     updateProject(id, name, color) {
@@ -173,7 +188,10 @@ class AppData extends storageItem {
     static fromJSON(data) {
         const appData = new AppData();
         appData.Projects = data.Projects.map(Project.fromJSON);
-        appData.defualtProject = data.defualtProject;
+        const defaultId = typeof data.defualtProject === 'string'
+            ? data.defualtProject
+            : data.defualtProject?.id;
+        appData.defualtProject = appData.Projects.find(p => p.id === defaultId) || appData.Projects[0];
         return appData;
     }
 }

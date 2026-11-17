@@ -5,12 +5,10 @@ export default class Data {
 
     constructor() {
         this.#hasData() ? this.#loadData() : this.#createAppData();
-        console.log("initial data:", this.data);
     }
 
     storeData = () => {
         localStorage.setItem("data",JSON.stringify(this.data));
-        console.log(`Storing data: ${this.data}`)
     }
 
     #loadData = () => {

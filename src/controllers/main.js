@@ -1,5 +1,6 @@
 import * as Utils from "./utilities.js"
 import Main from "../components/main.js";
+import { MyDay, AllTasks } from "../components/lists.js";
 import { data, storage } from "./data.js";
 import { Todo } from "./dataClasses.js";
 
@@ -19,12 +20,12 @@ export default class MainController {
             return Main(selectedProject, projects, task);
         },
 
-        myDay: () => {
-            return MyDay();
+        myDay: (viewData) => {
+            return MyDay(viewData.todos);
         },
 
-        allTasks: () => {
-            return AllTasks();
+        allTasks: (viewData) => {
+            return AllTasks(viewData.todos);
         },
 
         add: () => {
@@ -37,8 +38,21 @@ export default class MainController {
         },
 
         change:(id) => {
-            const project = this.view.data.selectedProject;
-            project.updateTodoStatus(id);     
+            const project = this.view.data.selectedProject
+                || data.Projects.find(p => p.getTodo(id));
+            if (project) {
+                project.updateTodoStatus(id);
+                storage.storeData();
+            }
+        },
+
+        delete:(id) => {
+            const project = this.view.data.selectedProject
+                || data.Projects.find(p => p.getTodo(id));
+            if (project) {
+                project.deleteTodo(id);
+                storage.storeData();
+            }
         }
     }
 
@@ -57,14 +71,6 @@ export default class MainController {
             this.#mainActions[action.dataset["mainAction"]](id.id);          
             this.render(this.view)  
         })
-
-        this.content.addEventListener('change', (event) => {
-            console.log("here");
-            const id = event.target.closest("[id]").id;   
-            if (event.target.checked) {
-      
-            }
-        });
 
         this.content.addEventListener("submit", (e) => {
             // e.preventDefault()
